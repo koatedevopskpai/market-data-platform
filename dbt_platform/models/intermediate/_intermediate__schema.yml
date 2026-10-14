@@ -1,0 +1,17 @@
+version: 2
+
+models:
+  - name: int_daily_price_metrics
+    description: >
+      Daily return, rolling 30-day average close / volatility and 30-day VWAP per
+      instrument. Early rows have null rolling metrics (insufficient history).
+    columns:
+      - name: ticker
+        tests:
+          - not_null
+      - name: trade_date
+        tests:
+          - not_null
+      - name: close_price
+        tests:
+          - not_null

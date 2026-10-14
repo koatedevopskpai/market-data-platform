@@ -1,0 +1,26 @@
+# Example dbt profile for the market-data platform.
+# Copy to `profiles.yml` and edit. `profiles.yml` is git-ignored.
+#
+#   cp profiles.yml.example profiles.yml
+#
+# `local` target (DuckDB) requires no cloud credentials and is what CI uses.
+# `bigquery` target authenticates with your gcloud application-default login,
+# or a service account, or Workload Identity Federation in CI.
+
+market_data_platform:
+  target: local
+  outputs:
+    local:
+      type: duckdb
+      path: "target/market_data.duckdb"
+      schema: main
+      threads: 4
+
+    bigquery:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT') }}"
+      dataset: "{{ env_var('GCP_DATASET', 'market_data') }}"
+      location: "{{ env_var('GCP_LOCATION', 'EU') }}"
+      threads: 4
+      priority: interactive

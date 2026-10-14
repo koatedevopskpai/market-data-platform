@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# dbt
+dbt_platform/target/
+dbt_platform/dbt_packages/
+dbt_platform/logs/
+dbt_platform/profiles.yml
+dbt_platform/seeds/*.csv
+
+# Terraform
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.*
+infra/.terraform.lock.hcl
+infra/crash.log
+infra/*.tfvars
+!infra/*.tfvars.example
+
+# Local data / OS
+data/local/
+.DS_Store
+Thumbs.db

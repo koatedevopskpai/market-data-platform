@@ -1,0 +1,6 @@
+ticker,company_name,sector,market_cap
+AAPL,Apple Inc.,Technology,3500000000000
+MSFT,Microsoft Corporation,Technology,3100000000000
+NVDA,NVIDIA Corporation,Technology,2900000000000
+JPM,JPMorgan Chase & Co.,Financials,620000000000
+XOM,Exxon Mobil Corporation,Energy,480000000000

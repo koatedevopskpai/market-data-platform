@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: stg_market_quotes
+    description: Cleaned, de-duplicated daily OHLCV quotes - one row per instrument per day.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - ticker
+            - trade_date
+    columns:
+      - name: ticker
+        description: Instrument symbol (upper-cased).
+        tests:
+          - not_null
+      - name: trade_date
+        tests:
+          - not_null
+      - name: close_price
+        tests:
+          - not_null
+      - name: volume
+        tests:
+          - not_null
+
+  - name: stg_company_fundamentals
+    description: Cleaned instrument reference data (Type-1).
+    columns:
+      - name: ticker
+        tests:
+          - unique
+          - not_null
+      - name: sector
+        tests:
+          - not_null

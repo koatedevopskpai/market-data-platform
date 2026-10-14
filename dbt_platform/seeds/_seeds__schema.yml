@@ -1,0 +1,19 @@
+version: 2
+
+seeds:
+  - name: market_quotes
+    description: Raw daily OHLCV quotes produced by the Python ingestion layer.
+    columns:
+      - name: ticker
+        tests:
+          - not_null
+      - name: trade_date
+        tests:
+          - not_null
+
+  - name: company_fundamentals
+    description: Raw instrument reference data produced by the Python ingestion layer.
+    columns:
+      - name: ticker
+        tests:
+          - not_null

@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: dim_instruments
+    description: One row per instrument (Type-1 dimension; SCD2 is a documented extension).
+    columns:
+      - name: instrument_key
+        tests:
+          - unique
+          - not_null
+      - name: ticker
+        tests:
+          - unique
+          - not_null
+      - name: sector
+        tests:
+          - not_null
+
+  - name: fct_daily_market_performance
+    description: Daily market-performance fact - one row per instrument per trading day.
+    columns:
+      - name: market_performance_key
+        tests:
+          - unique
+          - not_null
+      - name: ticker
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_instruments')
+              field: ticker
+      - name: trade_date
+        tests:
+          - not_null
+
+  - name: mart_ai_equity_context
+    description: Natural-language + numeric context rows for downstream RAG retrieval.
+    columns:
+      - name: context_text
+        tests:
+          - not_null
+      - name: ticker
+        tests:
+          - not_null

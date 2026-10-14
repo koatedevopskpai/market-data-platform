@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    name: ruff + pytest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Lint
+        run: ruff check src tests
+      - name: Unit tests
+        run: pytest -q
+
+  dbt:
+    name: dbt build (DuckDB)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Ingest sample data to dbt seeds
+        run: python -m src.ingestion.fetch_market_data --source data/sample --out dbt_platform/seeds
+      - name: dbt deps, seed, build and test
+        working-directory: dbt_platform
+        run: |
+          dbt deps
+          dbt seed --target local
+          dbt build --target local
