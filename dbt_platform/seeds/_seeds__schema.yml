@@ -13,6 +13,9 @@ seeds:
 
   - name: company_fundamentals
     description: Raw instrument reference data produced by the Python ingestion layer.
+    config:
+      column_types:
+        market_cap: "{{ 'numeric' if target.type == 'bigquery' else 'decimal(38,4)' }}"
     columns:
       - name: ticker
         tests:
