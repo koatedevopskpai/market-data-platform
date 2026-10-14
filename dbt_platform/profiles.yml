@@ -1,0 +1,24 @@
+# dbt profile for the market-data platform.
+#
+# `local`   - DuckDB, no cloud credentials. Used for local dev and CI.
+# `bigquery` - production target. Authenticate with `gcloud auth application-default
+#              login` (method: oauth) or Workload Identity Federation in CI.
+#              Set GCP_PROJECT / GCP_DATASET / GCP_LOCATION as needed.
+
+market_data_platform:
+  target: local
+  outputs:
+    local:
+      type: duckdb
+      path: "target/market_data.duckdb"
+      schema: main
+      threads: 4
+
+    bigquery:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT', 'unset-project') }}"
+      dataset: "{{ env_var('GCP_DATASET', 'market_data') }}"
+      location: "{{ env_var('GCP_LOCATION', 'EU') }}"
+      threads: 4
+      priority: interactive

@@ -16,7 +16,6 @@ venv/
 dbt_platform/target/
 dbt_platform/dbt_packages/
 dbt_platform/logs/
-dbt_platform/profiles.yml
 dbt_platform/seeds/*.csv
 
 # Terraform

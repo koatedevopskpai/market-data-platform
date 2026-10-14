@@ -95,11 +95,13 @@ verifiable without cloud credentials.
 
 ## Running against BigQuery
 
+A committed `dbt_platform/profiles.yml` provides a `local` (DuckDB) target and a `bigquery` target, so no profile
+setup is needed. Just point the BigQuery target at your project:
+
 ```bash
 export GCP_PROJECT=your-project-id
 export GCP_DATASET=market_data
 cd dbt_platform
-cp profiles.yml.example profiles.yml     # then edit the bigquery target
 dbt deps
 dbt seed   --target bigquery
 dbt build  --target bigquery
