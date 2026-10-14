@@ -122,6 +122,27 @@ In CI, authentication uses Workload Identity Federation — no long-lived JSON k
 cost-efficient (FinOps). Schema tests (`unique`, `not_null`, `accepted_values`, `relationships`) run in CI as a
 deploy-blocking gate.
 
+## CI
+
+Three GitHub Actions jobs run on every push, PR and manual dispatch:
+
+| Job | What it proves | Credentials |
+| --- | --- | --- |
+| `ruff + pytest` | lint + ingestion unit tests | none |
+| `dbt build (DuckDB)` | the full dbt DAG + tests on a local DuckDB warehouse | none |
+| `dbt build (BigQuery smoke)` | the same DAG runs on BigQuery, then the datasets are dropped | Workload Identity Federation |
+
+The BigQuery smoke job is **skipped by default**, so forks and PRs never need cloud credentials. To enable it on your
+own repo:
+
+1. Create a Workload Identity Federation pool + provider and a deploy service account with
+   `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`.
+2. Add repository **secrets**: `GCP_WIF_PROVIDER` (full provider resource name) and `GCP_SERVICE_ACCOUNT` (SA email).
+3. Add repository **variables**: `GCP_PROJECT` (and optionally `GCP_LOCATION`), then set `RUN_GCP_SMOKE = true`.
+
+The job builds into a throwaway dataset (`market_data_smoke_<run_id>`) and deletes it afterwards, so it only touches a
+few MiB of the BigQuery free tier.
+
 ## Project layout
 
 ```

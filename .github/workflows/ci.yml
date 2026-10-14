@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   python:
@@ -39,3 +40,45 @@ jobs:
           dbt deps
           dbt seed --target local
           dbt build --target local
+
+  bigquery-smoke:
+    name: dbt build (BigQuery smoke)
+    runs-on: ubuntu-latest
+    # Opt in by setting the repository variable RUN_GCP_SMOKE=true, the variable
+    # GCP_PROJECT, and the secrets GCP_WIF_PROVIDER + GCP_SERVICE_ACCOUNT.
+    # Skipped by default so forks and PRs never require cloud credentials.
+    if: ${{ vars.RUN_GCP_SMOKE == 'true' }}
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      GCP_PROJECT: ${{ vars.GCP_PROJECT }}
+      GCP_LOCATION: ${{ vars.GCP_LOCATION || 'EU' }}
+      GCP_DATASET: market_data_smoke_${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Authenticate to Google Cloud (keyless, WIF)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Ingest sample data to dbt seeds
+        run: python -m src.ingestion.fetch_market_data --source data/sample --out dbt_platform/seeds
+      - name: dbt deps, seed, build and test (BigQuery)
+        working-directory: dbt_platform
+        run: |
+          dbt deps
+          dbt seed  --target bigquery
+          dbt build --target bigquery
+      - name: Tear down throwaway datasets
+        if: always()
+        run: |
+          for suffix in raw staging intermediate marts; do
+            bq --project_id "$GCP_PROJECT" rm -r -f -d "${GCP_DATASET}_${suffix}" || true
+          done
+
