@@ -12,9 +12,9 @@ with marts that also feed a downstream **RAG retrieval view**.
 
 > **Scope & status** — This is a portfolio project, built end to end and green in CI.
 > Python ingestion + Pydantic validation, the full dbt DAG and its tests, Terraform and CI are implemented.
-> The Looker Studio dashboard is documented in [`looker/dashboard_build.md`](looker/dashboard_build.md) with a build
-> guide and screenshots. The pipeline runs locally on **DuckDB** (no cloud credentials required) and in production
-> on **BigQuery**.
+> The Looker Studio dashboard is live on BigQuery (see [Dashboard](#dashboard-looker-studio)); the build guide is in
+> [`looker/dashboard_build.md`](looker/dashboard_build.md). The pipeline runs locally on **DuckDB** (no cloud
+> credentials required) and in production on **BigQuery**.
 
 ---
 
@@ -66,6 +66,25 @@ flowchart LR
 ```
 
 Full detail: [`docs/architecture.md`](docs/architecture.md).
+
+## Dashboard (Looker Studio)
+
+Analytics built directly on the dbt marts — `fct_daily_market_performance`, `dim_instruments` and
+`mart_ai_equity_context`.
+
+**Page 1 — Market Overview**
+
+![Market Overview](looker/screenshots/01-market-overview.png)
+
+**Page 2 — Trend Analysis**
+
+![Trend Analysis](looker/screenshots/02-trend-analysis.png)
+
+**Page 3 — Instrument Detail**
+
+![Instrument Detail](looker/screenshots/03-instrument-detail.png)
+
+Build guide: [`looker/dashboard_build.md`](looker/dashboard_build.md).
 
 ## Stack
 
